@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiago Cardoso</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --white: #f5f4f0;
+      --black: #111010;
+      --gray: #888;
+      --sidebar: 210px;
+      --f: 'Cormorant Garamond', Georgia, serif;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: var(--white);
+      color: var(--black);
+      font-family: var(--f);
+    }
+
+    .site {
+      display: grid;
+      grid-template-columns: var(--sidebar) 1fr;
+      height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      padding: 2.2rem 1.8rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid rgba(0,0,0,0.08);
+      background: var(--white);
+      z-index: 10;
+    }
+
+    .site-name {
+      font-size: 1.1rem;
+      font-weight: 300;
+      line-height: 1.4;
+      margin-bottom: 2.5rem;
+    }
+
+    .site-name span {
+      display: block;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--gray);
+      margin-top: 0.1rem;
+    }
+
+    nav ul { list-style: none; display: flex; flex-direction: column; gap: 0.2rem; }
+
+    nav a {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--gray);
+      text-decoration: none;
+      display: block;
+      padding: 0.18rem 0;
+      transition: color 0.2s;
+      cursor: pointer;
+    }
+
+    nav a:hover, nav a.active { color: var(--black); }
+
+    /* subnav obras */
+    .subnav {
+      display: none;
+      flex-direction: column;
+      gap: 0.1rem;
+      margin-top: 0.15rem;
+      padding-left: 0.8rem;
+    }
+
+    .subnav.visible { display: flex; }
+
+    .subnav a {
+      font-size: 0.9rem;
+      font-style: italic;
+      color: #aaa;
+      padding: 0.1rem 0;
+    }
+
+    .subnav a:hover, .subnav a.active { color: var(--black); }
+
+    .sidebar-bottom {
+      font-size: 0.88rem;
+      font-weight: 300;
+      color: #bbb;
+    }
+
+    /* GALLERY */
+    .gallery-area { position: relative; overflow: hidden; }
+
+    .slides { width: 100%; height: 100%; position: relative; }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 1;
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      padding: 2.5rem 3rem 3.5rem;
+      cursor: zoom-in;
+      transition: transform 0.25s ease;
+    }
+
+    .slide[data-section="pictorica"] img {
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 0.35rem;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+    }
+
+    .slide img.zoomed {
+      transform: scale(1.25);
+      cursor: zoom-out;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 1rem;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 0.2s;
+      font-family: var(--f);
+      font-size: 1.6rem;
+      font-weight: 300;
+      color: var(--black);
+      line-height: 1;
+    }
+
+    .gallery-area:hover .arrow { opacity: 1; }
+    .arrow-prev { left: 0.5rem; }
+    .arrow-next { right: 0.5rem; }
+
+    .counter {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 2rem;
+      font-size: 0.88rem;
+      font-weight: 300;
+      color: var(--gray);
+      letter-spacing: 0.06em;
+    }
+
+    .caption {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 2rem;
+      font-size: 0.88rem;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--gray);
+      max-width: 60%;
+      line-height: 1.4;
+    }
+
+    /* separador entre seções dentro do slideshow */
+    .section-divider {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      pointer-events: none;
+    }
+
+    .section-divider.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .section-divider-line {
+      width: 1px;
+      height: 60px;
+      background: rgba(0,0,0,0.12);
+    }
+
+    .section-divider-label {
+      font-size: 0.78rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      color: var(--gray);
+      text-transform: lowercase;
+    }
+
+    /* PAGES */
+    .page {
+      display: none;
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      background: var(--white);
+      min-height: 100vh;
+      padding-bottom: 1rem;
+    }
+
+    .page.visible { display: grid; grid-template-columns: 1fr 1fr; }
+    #page-sobre.visible { display: flex; flex-direction: column; }
+    #page-sobre .sobre-texto { order: 1; }
+    #page-sobre .sobre-foto  { order: 2; }
+    #page-sobre.visible,
+    #page-audiovisual.visible { display: block; }
+
+    #page-sobre,
+    #page-audiovisual {
+      padding-bottom: 6rem;
+    }
+
+    .sobre-foto {
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      margin: 2.5rem auto 3.5rem;
+    }
+
+    #page-audiovisual .sobre-foto {
+      max-width: 760px;
+      width: min(100%, 760px);
+      margin: 2rem auto 3.5rem;
+    }
+
+    #page-audiovisual .sobre-foto img {
+      width: 100%;
+      max-height: 460px;
+      height: auto;
+      object-fit: contain;
+      filter: none;
+      border-radius: 0.25rem;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+    }
+
+    #page-audiovisual .video-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 860px;
+      margin: 2rem auto 0;
+      padding-top: 56.25%;
+      overflow: hidden;
+      border-radius: 0.35rem;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+      background: #111;
+      cursor: pointer;
+    }
+
+    #page-audiovisual .video-wrapper.loading {
+      background: #111;
+    }
+
+    #page-audiovisual .video-wrapper img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    #page-audiovisual .video-wrapper.loaded img {
+      opacity: 1;
+    }
+
+    #page-audiovisual .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    #page-audiovisual .sobre-texto {
+      padding: 2rem 2rem 0;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sobre-foto img {
+      width: 100%;
+      max-width: 440px;
+      height: auto;
+      object-fit: cover;
+      object-position: center top;
+      filter: grayscale(20%);
+    }
+
+    .sobre-texto {
+      padding: 3.5rem 3rem 0;
+      overflow-y: auto;
+      margin: 0 auto;
+      max-width: 720px;
+      width: min(720px, 100%);
+    }
+
+    .sobre-texto h2 {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 300;
+      letter-spacing: 0.06em;
+      color: var(--gray);
+      margin-bottom: 2rem;
+    }
+
+    .sobre-texto p {
+      font-size: 1.1rem;
+      font-weight: 300;
+      line-height: 1.9;
+      max-width: 720px;
+      margin-bottom: 1.4rem;
+      text-align: justify;
+      text-justify: inter-word;
+      margin-left: 0;
+      padding-left: 0;
+      white-space: normal;
+    }
+
+    .audiovisual-caption {
+      max-width: 860px;
+      margin: 1.2rem auto 0;
+      padding: 0 2rem;
+      font-size: 0.88rem;
+      font-style: italic;
+      font-weight: 300;
+      color: var(--gray);
+      line-height: 1.4;
+    }
+
+    /* contato page */
+    #page-contato.visible {
+      display: block;
+      padding: 3.5rem 4rem;
+    }
+
+    #page-contato h2 {
+      font-size: 1.1rem;
+      font-weight: 300;
+      letter-spacing: 0.06em;
+      color: var(--gray);
+      margin-bottom: 2rem;
+    }
+
+    .contato-grid { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .contato-item {
+      display: flex;
+      gap: 2rem;
+      font-size: 1.1rem;
+      font-weight: 300;
+      line-height: 1.8;
+    }
+
+    .contato-label { color: var(--gray); width: 90px; flex-shrink: 0; }
+
+    .contato-val a {
+      color: var(--black);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0,0,0,0.15);
+      padding-bottom: 1px;
+      transition: border-color 0.2s;
+    }
+
+    .contato-val a:hover { border-color: var(--black); }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 640px) {
+      html, body {
+        overflow: auto;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .site {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+        padding: 1.4rem 1.5rem 1.2rem;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .sidebar-top { display: flex; flex-direction: column; gap: 1rem; }
+      .site-name { font-size: 1.1rem; margin-bottom: 0; }
+      nav ul { flex-direction: row; flex-wrap: wrap; gap: 0.1rem 1.2rem; }
+      nav a { font-size: 1rem; }
+      .subnav { padding-left: 0; flex-direction: row; flex-wrap: wrap; gap: 0.1rem 0.8rem; margin-top: 0.3rem; }
+      .sidebar-bottom { display: none; }
+
+      .gallery-area {
+        height: 92vw;
+        min-height: 280px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .slides { position: absolute; inset: 0; }
+
+      .slide img { padding: 1rem 3.5rem 2.8rem; }
+
+      .arrow {
+        font-size: 1.2rem;
+        padding: 0.6rem 0.5rem;
+        opacity: 1 !important;
+        color: rgba(0,0,0,0.25);
+        top: auto;
+        bottom: 1rem;
+        transform: none;
+      }
+
+      .arrow-prev { left: 0.5rem; }
+      .arrow-next { right: 0.5rem; }
+
+      .caption {
+        font-size: 0.78rem;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 1rem;
+        white-space: nowrap;
+        max-width: 70%;
+      }
+
+      .counter { display: none; }
+
+      .page {
+        position: relative;
+        inset: unset;
+        overflow-y: visible;
+        min-height: auto;
+        width: 100%;
+      }
+
+      .page.visible {
+        display: block;
+        min-height: auto;
+      }
+
+      #page-sobre.visible {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #page-sobre .sobre-foto {
+        height: 70vw;
+        margin: 1.2rem auto 0;
+      }
+
+      #page-sobre .sobre-texto {
+        padding: 1.6rem 1.5rem 0;
+      }
+
+      #page-audiovisual .sobre-foto {
+        margin: 0.5rem auto 2rem;
+      }
+
+      .sobre-texto { padding: 1.6rem 1.5rem 0; }
+      .sobre-texto p { font-size: 1.05rem; max-width: 100%; }
+
+      #page-contato.visible { padding: 2rem 1.5rem; }
+      .contato-item { font-size: 1rem; gap: 1rem; }
+      .contato-label { width: 75px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="site">
+
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="site-name">
+        tiago cardoso
+        <span>artista visual</span>
+      </div>
+      <nav>
+        <ul>
+          <li>
+            <a href="#" class="active" data-page="obras">obras</a>
+            <div class="subnav visible" id="subnav-obras">
+              <a href="#" class="active" data-section="pictorica">pictórica</a>
+              <a href="#" data-section="digital">digital</a>
+              <a href="#" data-page="audiovisual" data-subnav="true">audiovisual</a>
+            </div>
+          </li>
+          <li><a href="#" data-page="sobre">sobre</a></li>
+          <li><a href="#" data-page="contato">contato</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="sidebar-bottom">juiz de fora, mg<br>2026</div>
+  </aside>
+
+  <main class="gallery-area" id="mainArea">
+
+    <div class="slides" id="slidesWrap">
+
+      <!-- SEÇÃO PICTÓRICA -->
+      <div class="slide active" data-section="pictorica" data-caption="2026, óleo sobre tela — 50 x 50 cm">
+        <img src="imagens/pintura1.jpg" alt="pintura 1">
+      </div>
+      <div class="slide" data-section="pictorica" data-caption="2026, óleo sobre tela — 10 × 10 × 2 cm">
+        <img src="imagens/pintura3.jpg" alt="pintura 3">
+      </div>
+      <div class="slide" data-section="pictorica" data-caption="2026, óleo sobre tela — 19 × 13 × 2 cm">
+        <img src="imagens/pintura7.jpg" alt="pintura 7">
+      </div>
+
+      <!-- DIVISOR -->
+      <div class="section-divider" id="divider">
+        <div class="section-divider-line"></div>
+        <div class="section-divider-label">produção digital</div>
+        <div class="section-divider-line"></div>
+      </div>
+
+      <!-- SEÇÃO DIGITAL -->
+      <div class="slide" data-section="digital" data-caption="2026, 4068 × 3456 px">
+        <img src="imagens/digital1.jpg" alt="digital 1">
+      </div>
+      <div class="slide" data-section="digital" data-caption="2026, 4068 × 3000 px">
+        <img src="imagens/2026.jpg" alt="2026 digital">
+      </div>
+
+      <button class="arrow arrow-prev" id="prev">←</button>
+      <button class="arrow arrow-next" id="next">→</button>
+      <div class="caption" id="caption">2026, óleo sobre tela — 18 × 12 × 2 cm</div>
+      <div class="counter" id="counter">1 / 5</div>
+    </div>
+
+    <!-- SOBRE -->
+    <div class="page" id="page-sobre">
+      <div class="sobre-texto">
+        <h2>sobre</h2>
+        <p>Tiago Cardoso (2007) é artista visual, natural de Cantagalo — RJ, atualmente residente em Juiz de Fora — MG e licenciando em Artes Visuais pela Universidade Federal de Juiz de Fora.</p>
+        <p>Sua pesquisa se inicia a partir das artes gráficas, começando sua produção digital entre 2021–2022. Atualmente, explora as intersecções entre linguagens diversas, sendo elas pintura, imagem digital 2D, audiovisual e música.</p>
+        <p>Sua prática se desenvolve desde 2025, em que se encontra buscando uma progressão estético-visual do seu trabalho. A tese se baseia em relações de cor, espaço e textura, com ênfase em dialogar suas demais criações das linguagens distintas entre si.</p>
+        <p>Atualmente procede com a pesquisa imagética focada nas pinturas e nas produções gráficas. Sua última divulgação, que exclui as duas linguagens citadas, vem no primeiro semestre de 2026, com a publicação do audiovisual "2026".</p>
+      </div>
+      <div class="sobre-foto">
+        <img src="imagens/tiago-cardoso.jpg" alt="Tiago Cardoso">
+      </div>
+    </div>
+    <div class="page" id="page-contato">
+      <h2>contato</h2>
+      <div class="contato-grid">
+        <div class="contato-item">
+          <span class="contato-label">instagram</span>
+          <span class="contato-val"><a href="https://www.instagram.com/t_______c________/" target="_blank" rel="noopener">@t_______c________</a></span>
+        </div>
+        <div class="contato-item">
+          <span class="contato-label">email</span>
+          <span class="contato-val"><a href="mailto:tiagocardosoarte@gmail.com">tiagocardosoarte@gmail.com</a></span>
+        </div>
+        <div class="contato-item">
+          <span class="contato-label">localização</span>
+          <span class="contato-val">juiz de fora, mg — brasil</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIOVISUAL -->
+    <div class="page" id="page-audiovisual">
+      <div class="sobre-texto">
+        <h2>audiovisual</h2>
+      </div>
+      <div class="video-wrapper" data-video="https://www.youtube.com/embed/gRBESpJAxHk"></div>
+      <div class="audiovisual-caption">Fragmento do projeto audiovisual "2026". Clique para assistir.</div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const DIVIDER_AFTER = 2;
+
+  const slides       = Array.from(document.querySelectorAll('.slide'));
+  const divider      = document.getElementById('divider');
+  const counterEl    = document.getElementById('counter');
+  const captionEl    = document.getElementById('caption');
+  const slidesWrap   = document.getElementById('slidesWrap');
+  const mainArea     = document.getElementById('mainArea');
+  const subnav       = document.getElementById('subnav-obras');
+  const pages        = document.querySelectorAll('.page');
+  const navLinks     = document.querySelectorAll('nav a[data-page]:not([data-subnav])');
+  const sectionLinks = document.querySelectorAll('.subnav a[data-section]');
+  // link audiovisual dentro do subnav
+  const audiovisualLink = document.querySelector('.subnav a[data-page="audiovisual"]');
+  const INTERVAL = 8000;
+
+  let current = 0;
+  let timer;
+  let zoomed = false;
+  let showingDivider = false;
+
+  function updateUI() {
+    const slide = slides[current];
+    captionEl.textContent = slide.dataset.caption || '';
+    counterEl.textContent = `${current + 1} / ${slides.length}`;
+    const sec = slide.dataset.section;
+    sectionLinks.forEach(l => l.classList.toggle('active', l.dataset.section === sec));
+    if (audiovisualLink) audiovisualLink.classList.remove('active');
+  }
+
+  function resetZoom() {
+    slides.forEach(s => { const img = s.querySelector('img'); if (img) img.classList.remove('zoomed'); });
+    zoomed = false;
+  }
+
+  function hideDivider() { divider.classList.remove('active'); showingDivider = false; }
+
+  function showDivider(callback) {
+    showingDivider = true;
+    divider.classList.add('active');
+    slides.forEach(s => s.classList.remove('active'));
+    setTimeout(() => { hideDivider(); callback(); }, 1800);
+  }
+
+  function goTo(n, skipDivider = false) {
+    resetZoom();
+    const next = (n + slides.length) % slides.length;
+    const crossingBoundary = current === DIVIDER_AFTER && next === DIVIDER_AFTER + 1;
+    const crossingBack     = current === DIVIDER_AFTER + 1 && next === DIVIDER_AFTER;
+
+    if ((crossingBoundary || crossingBack) && !skipDivider) {
+      slides[current].classList.remove('active');
+      showDivider(() => {
+        current = next;
+        slides[current].classList.add('active');
+        updateUI();
+        startAuto();
+      });
+      return;
+    }
+
+    slides[current].classList.remove('active');
+    current = next;
+    slides[current].classList.add('active');
+    updateUI();
+  }
+
+  function startAuto() {
+    clearInterval(timer);
+    if (slidesWrap.style.display === 'none' || showingDivider || zoomed) return;
+    timer = setInterval(() => { if (!showingDivider && !zoomed) goTo(current + 1); }, INTERVAL);
+  }
+
+  function bump(dir) {
+    if (showingDivider) return;
+    clearInterval(timer);
+    goTo(current + dir);
+    startAuto();
+  }
+
+  document.getElementById('prev').addEventListener('click', () => bump(-1));
+  document.getElementById('next').addEventListener('click', () => bump(1));
+
+  slidesWrap.addEventListener('click', e => {
+    if (e.target.closest('.arrow') || showingDivider) return;
+    const image = e.target.closest('.slide img');
+    if (image) { image.classList.toggle('zoomed'); zoomed = image.classList.contains('zoomed'); return; }
+    bump(1);
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') bump(1);
+    if (e.key === 'ArrowLeft')  bump(-1);
+  });
+
+  slidesWrap.addEventListener('mouseenter', () => clearInterval(timer));
+  slidesWrap.addEventListener('mouseleave', startAuto);
+
+  /* ── video wrapper ── */
+  document.querySelectorAll('.video-wrapper').forEach(wrapper => {
+    const videoSrc = wrapper.dataset.video;
+    const match = videoSrc.match(/embed\/([^?&/]+)/);
+    const videoId = match ? match[1] : null;
+    wrapper.classList.add('loading');
+
+    const thumb = document.createElement('img');
+    thumb.alt = 'Thumbnail do projeto audiovisual 2026';
+    thumb.decoding = 'async';
+    thumb.dataset.fallback = 'maxresdefault';
+
+    const loadThumbnail = v => { thumb.dataset.fallback = v; thumb.src = `https://i.ytimg.com/vi/${videoId}/${v}.jpg`; };
+
+    thumb.addEventListener('load', () => {
+      if (!wrapper.contains(thumb)) wrapper.appendChild(thumb);
+      wrapper.classList.remove('loading');
+      wrapper.classList.add('loaded');
+    });
+    thumb.addEventListener('error', () => {
+      if (thumb.dataset.fallback === 'maxresdefault') { loadThumbnail('sddefault'); return; }
+      if (thumb.dataset.fallback === 'sddefault')     { loadThumbnail('hqdefault'); return; }
+      if (!wrapper.contains(thumb)) wrapper.appendChild(thumb);
+      thumb.src = 'imagens/audiovisual.jpeg';
+      wrapper.classList.remove('loading');
+      wrapper.classList.add('loaded');
+    });
+
+    videoId ? loadThumbnail('maxresdefault') : (thumb.src = 'imagens/audiovisual.jpeg');
+
+    wrapper.addEventListener('click', () => {
+      if (wrapper.dataset.loaded === 'true') return;
+      const iframe = document.createElement('iframe');
+      iframe.src = wrapper.dataset.video;
+      iframe.title = 'Fragmento do projeto audiovisual 2026';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      wrapper.innerHTML = '';
+      wrapper.appendChild(iframe);
+      wrapper.dataset.loaded = 'true';
+    });
+  });
+
+  /* ── section links (pictórica / digital) ── */
+  sectionLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      // garante que estamos na view de obras
+      showPage('obras');
+      sectionLinks.forEach(l => l.classList.remove('active'));
+      if (audiovisualLink) audiovisualLink.classList.remove('active');
+      link.classList.add('active');
+      hideDivider();
+      resetZoom();
+      clearInterval(timer);
+      const sec = link.dataset.section;
+      const target = slides.findIndex(s => s.dataset.section === sec);
+      if (target !== -1) {
+        slides[current].classList.remove('active');
+        current = target;
+        slides[current].classList.add('active');
+        updateUI();
+        startAuto();
+      }
+    });
+  });
+
+  /* ── audiovisual link dentro do subnav ── */
+  if (audiovisualLink) {
+    audiovisualLink.addEventListener('click', e => {
+      e.preventDefault();
+      // marca o link pai "obras" como active
+      navLinks.forEach(l => l.classList.remove('active'));
+      document.querySelector('nav a[data-page="obras"]').classList.add('active');
+      // marca audiovisual no subnav
+      sectionLinks.forEach(l => l.classList.remove('active'));
+      audiovisualLink.classList.add('active');
+      showPage('audiovisual');
+    });
+  }
+
+  /* ── showPage ── */
+  function showPage(name) {
+    pages.forEach(p => p.classList.remove('visible'));
+
+    if (name === 'obras') {
+      mainArea.style.overflow = 'hidden';
+      mainArea.style.position = 'relative';
+      slidesWrap.style.display = '';
+      subnav.classList.add('visible');
+      startAuto();
+    } else {
+      slidesWrap.style.display = 'none';
+      subnav.classList.add('visible'); // subnav permanece visível
+      resetZoom();
+      clearInterval(timer);
+      const p = document.getElementById('page-' + name);
+      if (p) {
+        p.classList.add('visible');
+        const isMobile = window.innerWidth <= 640;
+        if (isMobile) {
+          mainArea.style.overflow = 'visible';
+          mainArea.style.position = 'static';
+        }
+      }
+    }
+  }
+
+  /* ── nav links principais (sobre, contato) ── */
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      navLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      // se voltar para obras, limpa active do audiovisual no subnav
+      if (link.dataset.page === 'obras') {
+        sectionLinks.forEach(l => l.classList.remove('active'));
+        if (audiovisualLink) audiovisualLink.classList.remove('active');
+        // restaura primeiro slide da seção ativa
+        const firstActive = sectionLinks[0];
+        if (firstActive) firstActive.classList.add('active');
+      }
+      showPage(link.dataset.page);
+    });
+  });
+
+  updateUI();
+  startAuto();
+</script>
+
+</body>
+</html>
