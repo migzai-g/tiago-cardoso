@@ -520,6 +520,7 @@
             <div class="subnav visible" id="subnav-obras">
               <a href="#" class="active" data-section="pictorica">pictórica</a>
               <a href="#" data-section="digital">digital</a>
+              <a href="#" data-section="grafica">gráfica</a>
               <a href="#" data-page="audiovisual" data-subnav="true">audiovisual</a>
             </div>
           </li>
@@ -535,7 +536,6 @@
 
     <div class="slides" id="slidesWrap">
 
-      <!-- SEÇÃO PICTÓRICA -->
       <div class="slide active" data-section="pictorica" data-caption="2026, óleo sobre tela — 50 x 50 cm">
         <img src="imagens/pintura1.jpg" alt="pintura 1">
       </div>
@@ -546,19 +546,24 @@
         <img src="imagens/pintura7.jpg" alt="pintura 7">
       </div>
 
-      <!-- DIVISOR -->
       <div class="section-divider" id="divider">
         <div class="section-divider-line"></div>
         <div class="section-divider-label">produção digital</div>
         <div class="section-divider-line"></div>
       </div>
 
-      <!-- SEÇÃO DIGITAL -->
       <div class="slide" data-section="digital" data-caption="2026, 4068 × 3456 px">
         <img src="imagens/digital1.jpg" alt="digital 1">
       </div>
       <div class="slide" data-section="digital" data-caption="2026, 4068 × 3000 px">
         <img src="imagens/2026.jpg" alt="2026 digital">
+      </div>
+      
+      <div class="slide" data-section="grafica" data-caption="3000 × 3000 px">
+        <img src="imagens/fire-red.jpg" alt="fire red">
+      </div>
+      <div class="slide" data-section="grafica" data-caption="3080 × 4000 px">
+        <img src="imagens/sem-essa,-aranha-II.jpg" alt="sem essa aranha II">
       </div>
 
       <button class="arrow arrow-prev" id="prev">←</button>
@@ -567,7 +572,6 @@
       <div class="counter" id="counter">1 / 5</div>
     </div>
 
-    <!-- SOBRE -->
     <div class="page" id="page-sobre">
       <div class="sobre-texto">
         <h2>sobre</h2>
@@ -598,7 +602,6 @@
       </div>
     </div>
 
-    <!-- AUDIOVISUAL -->
     <div class="page" id="page-audiovisual">
       <div class="sobre-texto">
         <h2>audiovisual</h2>
@@ -611,8 +614,6 @@
 </div>
 
 <script>
-  const DIVIDER_AFTER = 2;
-
   const slides       = Array.from(document.querySelectorAll('.slide'));
   const divider      = document.getElementById('divider');
   const counterEl    = document.getElementById('counter');
@@ -623,7 +624,6 @@
   const pages        = document.querySelectorAll('.page');
   const navLinks     = document.querySelectorAll('nav a[data-page]:not([data-subnav])');
   const sectionLinks = document.querySelectorAll('.subnav a[data-section]');
-  // link audiovisual dentro do subnav
   const audiovisualLink = document.querySelector('.subnav a[data-page="audiovisual"]');
   const INTERVAL = 8000;
 
@@ -658,10 +658,17 @@
   function goTo(n, skipDivider = false) {
     resetZoom();
     const next = (n + slides.length) % slides.length;
-    const crossingBoundary = current === DIVIDER_AFTER && next === DIVIDER_AFTER + 1;
-    const crossingBack     = current === DIVIDER_AFTER + 1 && next === DIVIDER_AFTER;
+    
+    // Lógica dinâmica para transição de seções
+    const currentSec = slides[current].dataset.section;
+    const nextSec = slides[next].dataset.section;
 
-    if ((crossingBoundary || crossingBack) && !skipDivider) {
+    if (currentSec !== nextSec && !skipDivider) {
+      const dividerLabel = document.querySelector('.section-divider-label');
+      if (nextSec === 'digital') dividerLabel.textContent = 'produção digital';
+      else if (nextSec === 'grafica') dividerLabel.textContent = 'produção gráfica';
+      else if (nextSec === 'pictorica') dividerLabel.textContent = 'produção pictórica';
+
       slides[current].classList.remove('active');
       showDivider(() => {
         current = next;
@@ -752,11 +759,10 @@
     });
   });
 
-  /* ── section links (pictórica / digital) ── */
+  /* ── section links ── */
   sectionLinks.forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
-      // garante que estamos na view de obras
       showPage('obras');
       sectionLinks.forEach(l => l.classList.remove('active'));
       if (audiovisualLink) audiovisualLink.classList.remove('active');
@@ -776,21 +782,17 @@
     });
   });
 
-  /* ── audiovisual link dentro do subnav ── */
   if (audiovisualLink) {
     audiovisualLink.addEventListener('click', e => {
       e.preventDefault();
-      // marca o link pai "obras" como active
       navLinks.forEach(l => l.classList.remove('active'));
       document.querySelector('nav a[data-page="obras"]').classList.add('active');
-      // marca audiovisual no subnav
       sectionLinks.forEach(l => l.classList.remove('active'));
       audiovisualLink.classList.add('active');
       showPage('audiovisual');
     });
   }
 
-  /* ── showPage ── */
   function showPage(name) {
     pages.forEach(p => p.classList.remove('visible'));
 
@@ -802,7 +804,7 @@
       startAuto();
     } else {
       slidesWrap.style.display = 'none';
-      subnav.classList.add('visible'); // subnav permanece visível
+      subnav.classList.add('visible');
       resetZoom();
       clearInterval(timer);
       const p = document.getElementById('page-' + name);
@@ -817,17 +819,14 @@
     }
   }
 
-  /* ── nav links principais (sobre, contato) ── */
   navLinks.forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
       navLinks.forEach(l => l.classList.remove('active'));
       link.classList.add('active');
-      // se voltar para obras, limpa active do audiovisual no subnav
       if (link.dataset.page === 'obras') {
         sectionLinks.forEach(l => l.classList.remove('active'));
         if (audiovisualLink) audiovisualLink.classList.remove('active');
-        // restaura primeiro slide da seção ativa
         const firstActive = sectionLinks[0];
         if (firstActive) firstActive.classList.add('active');
       }
