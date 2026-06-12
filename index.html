@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+html_content = """<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -559,11 +559,20 @@
         <img src="imagens/2026.jpg" alt="2026 digital">
       </div>
       
-      <div class="slide" data-section="grafica" data-caption="3000 × 3000 px">
+      <div class="slide" data-section="grafica" data-caption="3000 x 3000 px">
         <img src="imagens/fire-red.jpg" alt="fire red">
       </div>
       <div class="slide" data-section="grafica" data-caption="3080 × 4000 px">
         <img src="imagens/sem-essa,-aranha-II.jpg" alt="sem essa aranha II">
+      </div>
+      <div class="slide" data-section="grafica" data-caption="3508 × 4961 px">
+        <img src="imagens/RARO.jpg" alt="RARO">
+      </div>
+      <div class="slide" data-section="grafica" data-caption="3080 × 3300 px">
+        <img src="imagens/tamo-aí.jpg" alt="tamo aí">
+      </div>
+      <div class="slide" data-section="grafica" data-caption="3080 × 3300 px">
+        <img src="imagens/arte.jpg" alt="arte">
       </div>
 
       <button class="arrow arrow-prev" id="prev">←</button>
@@ -839,4 +848,9 @@
 </script>
 
 </body>
-</html>
+</html>"""
+
+with open("index-v2.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print("HTML file successfully saved.")
