@@ -31,7 +31,6 @@
       height: 100vh;
     }
 
-    /* SIDEBAR */
     .sidebar {
       padding: 2.2rem 1.8rem;
       display: flex;
@@ -72,7 +71,6 @@
 
     nav a:hover, nav a.active { color: var(--black); }
 
-    /* subnav obras */
     .subnav {
       display: none;
       flex-direction: column;
@@ -98,7 +96,6 @@
       color: #bbb;
     }
 
-    /* GALLERY */
     .gallery-area { position: relative; overflow: hidden; }
 
     .slides { width: 100%; height: 100%; position: relative; }
@@ -182,7 +179,6 @@
       line-height: 1.4;
     }
 
-    /* separador entre seções dentro do slideshow */
     .section-divider {
       position: absolute;
       inset: 0;
@@ -215,7 +211,6 @@
       text-transform: lowercase;
     }
 
-    /* PAGES */
     .page {
       display: none;
       position: absolute;
@@ -234,9 +229,7 @@
     #page-audiovisual.visible { display: block; }
 
     #page-sobre,
-    #page-audiovisual {
-      padding-bottom: 6rem;
-    }
+    #page-audiovisual { padding-bottom: 6rem; }
 
     .sobre-foto {
       overflow: hidden;
@@ -274,9 +267,7 @@
       cursor: pointer;
     }
 
-    #page-audiovisual .video-wrapper.loading {
-      background: #111;
-    }
+    #page-audiovisual .video-wrapper.loading { background: #111; }
 
     #page-audiovisual .video-wrapper img {
       position: absolute;
@@ -289,16 +280,12 @@
       transition: opacity 0.25s ease;
     }
 
-    #page-audiovisual .video-wrapper.loaded img {
-      opacity: 1;
-    }
+    #page-audiovisual .video-wrapper.loaded img { opacity: 1; }
 
     #page-audiovisual .video-wrapper iframe {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       border: 0;
     }
 
@@ -362,7 +349,6 @@
       line-height: 1.4;
     }
 
-    /* contato page */
     #page-contato.visible {
       display: block;
       padding: 3.5rem 4rem;
@@ -398,105 +384,32 @@
 
     .contato-val a:hover { border-color: var(--black); }
 
-    /* ─── MOBILE ─── */
     @media (max-width: 640px) {
-      html, body {
-        overflow: auto;
-        height: auto;
-        min-height: 100vh;
-      }
-
-      .site {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto;
-        height: auto;
-        min-height: 100vh;
-      }
-
-      .sidebar {
-        border-right: none;
-        border-bottom: 1px solid rgba(0,0,0,0.08);
-        padding: 1.4rem 1.5rem 1.2rem;
-        flex-direction: column;
-        gap: 1rem;
-      }
-
+      html, body { overflow: auto; height: auto; min-height: 100vh; }
+      .site { grid-template-columns: 1fr; grid-template-rows: auto auto; height: auto; min-height: 100vh; }
+      .sidebar { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.08); padding: 1.4rem 1.5rem 1.2rem; flex-direction: column; gap: 1rem; }
       .sidebar-top { display: flex; flex-direction: column; gap: 1rem; }
       .site-name { font-size: 1.1rem; margin-bottom: 0; }
       nav ul { flex-direction: row; flex-wrap: wrap; gap: 0.1rem 1.2rem; }
       nav a { font-size: 1rem; }
       .subnav { padding-left: 0; flex-direction: row; flex-wrap: wrap; gap: 0.1rem 0.8rem; margin-top: 0.3rem; }
       .sidebar-bottom { display: none; }
-
-      .gallery-area {
-        height: 92vw;
-        min-height: 280px;
-        position: relative;
-        overflow: hidden;
-      }
-
+      .gallery-area { height: 92vw; min-height: 280px; position: relative; overflow: hidden; }
       .slides { position: absolute; inset: 0; }
-
       .slide img { padding: 1rem 3.5rem 2.8rem; }
-
-      .arrow {
-        font-size: 1.2rem;
-        padding: 0.6rem 0.5rem;
-        opacity: 1 !important;
-        color: rgba(0,0,0,0.25);
-        top: auto;
-        bottom: 1rem;
-        transform: none;
-      }
-
+      .arrow { font-size: 1.2rem; padding: 0.6rem 0.5rem; opacity: 1 !important; color: rgba(0,0,0,0.25); top: auto; bottom: 1rem; transform: none; }
       .arrow-prev { left: 0.5rem; }
       .arrow-next { right: 0.5rem; }
-
-      .caption {
-        font-size: 0.78rem;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: 1rem;
-        white-space: nowrap;
-        max-width: 70%;
-      }
-
+      .caption { font-size: 0.78rem; left: 50%; transform: translateX(-50%); bottom: 1rem; white-space: nowrap; max-width: 70%; }
       .counter { display: none; }
-
-      .page {
-        position: relative;
-        inset: unset;
-        overflow-y: visible;
-        min-height: auto;
-        width: 100%;
-      }
-
-      .page.visible {
-        display: block;
-        min-height: auto;
-      }
-
-      #page-sobre.visible {
-        display: flex;
-        flex-direction: column;
-      }
-
-      #page-sobre .sobre-foto {
-        height: 70vw;
-        margin: 1.2rem auto 0;
-      }
-
-      #page-sobre .sobre-texto {
-        padding: 1.6rem 1.5rem 0;
-      }
-
-      #page-audiovisual .sobre-foto {
-        margin: 0.5rem auto 2rem;
-      }
-
+      .page { position: relative; inset: unset; overflow-y: visible; min-height: auto; width: 100%; }
+      .page.visible { display: block; min-height: auto; }
+      #page-sobre.visible { display: flex; flex-direction: column; }
+      #page-sobre .sobre-foto { height: 70vw; margin: 1.2rem auto 0; }
+      #page-sobre .sobre-texto { padding: 1.6rem 1.5rem 0; }
+      #page-audiovisual .sobre-foto { margin: 0.5rem auto 2rem; }
       .sobre-texto { padding: 1.6rem 1.5rem 0; }
       .sobre-texto p { font-size: 1.05rem; max-width: 100%; }
-
       #page-contato.visible { padding: 2rem 1.5rem; }
       .contato-item { font-size: 1rem; gap: 1rem; }
       .contato-label { width: 75px; }
@@ -558,17 +471,26 @@
       <div class="slide" data-section="digital" data-caption="2026, 4068 × 3000 px">
         <img src="imagens/2026.jpg" alt="2026 digital">
       </div>
-      
-      <div class="slide" data-section="grafica" data-caption="3000 x 3000 px">
+
+      <div class="slide" data-section="grafica" data-caption="3000 × 3000 px">
         <img src="imagens/fire-red.jpg" alt="fire red">
       </div>
-      <div class="slide" data-section="grafica" data-caption="3080 x 4000 px">
-        <img src="imagens/sem-essa,-aranha-II.jpg" alt="sem essa aranha">
+      <div class="slide" data-section="grafica" data-caption="3080 × 4000 px">
+        <img src="imagens/sem-essa,-aranha-II.jpg" alt="sem essa aranha II">
+      </div>
+      <div class="slide" data-section="grafica" data-caption="3508 × 4961 px">
+        <img src="imagens/RARO.jpg" alt="RARO">
+      </div>
+      <div class="slide" data-section="grafica" data-caption="3080 × 3300 px">
+        <img src="imagens/tamo-aí.jpg" alt="tamo aí">
+      </div>
+      <div class="slide" data-section="grafica" data-caption="3080 × 3300 px">
+        <img src="imagens/arte.jpg" alt="arte">
       </div>
 
       <button class="arrow arrow-prev" id="prev">←</button>
       <button class="arrow arrow-next" id="next">→</button>
-      <div class="caption" id="caption">2026, óleo sobre tela — 18 × 12 × 2 cm</div>
+      <div class="caption" id="caption"></div>
       <div class="counter" id="counter">1 / 5</div>
     </div>
 
@@ -584,6 +506,7 @@
         <img src="imagens/tiago-cardoso.jpg" alt="Tiago Cardoso">
       </div>
     </div>
+
     <div class="page" id="page-contato">
       <h2>contato</h2>
       <div class="contato-grid">
@@ -658,8 +581,6 @@
   function goTo(n, skipDivider = false) {
     resetZoom();
     const next = (n + slides.length) % slides.length;
-    
-    // Lógica dinâmica para transição de seções
     const currentSec = slides[current].dataset.section;
     const nextSec = slides[next].dataset.section;
 
@@ -716,7 +637,6 @@
   slidesWrap.addEventListener('mouseenter', () => clearInterval(timer));
   slidesWrap.addEventListener('mouseleave', startAuto);
 
-  /* ── video wrapper ── */
   document.querySelectorAll('.video-wrapper').forEach(wrapper => {
     const videoSrc = wrapper.dataset.video;
     const match = videoSrc.match(/embed\/([^?&/]+)/);
@@ -759,7 +679,6 @@
     });
   });
 
-  /* ── section links ── */
   sectionLinks.forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
@@ -795,7 +714,6 @@
 
   function showPage(name) {
     pages.forEach(p => p.classList.remove('visible'));
-
     if (name === 'obras') {
       mainArea.style.overflow = 'hidden';
       mainArea.style.position = 'relative';
