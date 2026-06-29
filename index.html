@@ -433,7 +433,6 @@
             <div class="subnav visible" id="subnav-obras">
               <a href="#" class="active" data-section="pictorica">pictórica</a>
               <a href="#" data-section="digital">digital</a>
-              <a href="#" data-section="grafica">gráfica</a>
               <a href="#" data-page="audiovisual" data-subnav="true">audiovisual</a>
             </div>
           </li>
@@ -472,18 +471,6 @@
         <img src="imagens/2026.jpg" alt="2026 digital">
       </div>
 
-      <div class="slide" data-section="grafica" data-caption="3000 × 3000 px">
-        <img src="imagens/fire-red.jpg" alt="fire red">
-      </div>
-      <div class="slide" data-section="grafica" data-caption="3080 × 4000 px">
-        <img src="imagens/sem-essa,-aranha-II.jpg" alt="sem essa aranha II">
-      </div>
-      <div class="slide" data-section="grafica" data-caption="3080 × 3300 px">
-        <img src="imagens/arte.jpg" alt="arte">
-      </div>
-      <div class="slide" data-section="grafica" data-caption="3080 × 3300 px">
-        <img src="imagens/tamo-aí.jpg" alt="tamo aí">
-      </div>
 
       <button class="arrow arrow-prev" id="prev">←</button>
       <button class="arrow arrow-next" id="next">→</button>
@@ -584,7 +571,7 @@
     if (currentSec !== nextSec && !skipDivider) {
       const dividerLabel = document.querySelector('.section-divider-label');
       if (nextSec === 'digital') dividerLabel.textContent = 'produção digital';
-      else if (nextSec === 'grafica') dividerLabel.textContent = 'produção gráfica';
+
       else if (nextSec === 'pictorica') dividerLabel.textContent = 'produção pictórica';
 
       slides[current].classList.remove('active');
